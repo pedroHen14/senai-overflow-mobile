@@ -31,8 +31,7 @@ export const TextToolBar = styled(TextDefault)`
   color: ${colors.light};
 `;
 
-export const SignOutIcon = styled(Icon)`
-  color: ${colors.light};
-  right: 4px;
+export const IconSignOut = styled(Icon)`
+  color: ${colors.dark};
   font-size: 25px;
 `;

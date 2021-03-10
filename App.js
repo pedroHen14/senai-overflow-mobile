@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import "react-native-gesture-handler";
 import Home from "./src/screens/Home";
 import Login from "./src/screens/Login";
+import { isSignedIn } from "./src/services/security";
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -11,7 +12,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="Login" /**{isSignedIn() ? "Home" : "Login"}**/
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Login" component={Login} />
