@@ -4,14 +4,18 @@ import Button from "../../components/Button";
 import { api } from "../../services/api";
 import { signIn } from "../../services/security";
 import colors from "../../styles/colors";
-import { Container, TextToolBar, ToolBar } from "../../styles/stylesGlobal";
-import { Content, Label, TextInputLogin } from "../Login/styles";
+import { Container, ToolBar, TextToolBar } from "../../styles/stylesGlobal";
+import { Content, Label, TextInputLogin } from "./styles";
 
 function Login({ navigation }) {
+  StatusBar.setBackgroundColor(colors.primary);
+
   const [login, setLogin] = useState({
     email: "",
     password: "",
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEmail = (e) => {
     setLogin({ ...login, email: e });
@@ -23,12 +27,18 @@ function Login({ navigation }) {
 
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
+
       const response = await api.post("/sessions", login);
 
       signIn(response.data);
 
+      setIsLoading(false);
+
       navigation.navigate("Home");
     } catch (error) {
+      setIsLoading(false);
+
       console.log(error);
       if (error.response) {
         Alert.alert("Ops", error.response.data.error);
@@ -39,30 +49,30 @@ function Login({ navigation }) {
   return (
     <Container>
       <ToolBar>
-        <TextToolBar>Faça o login</TextToolBar>
+        <TextToolBar>Faça o Login</TextToolBar>
       </ToolBar>
       <Content>
-        <Label>E-mail</Label>
+        <Label>E-Mail</Label>
         <TextInputLogin
           autoCompleteType="email"
-          placeholder="Digite seu Email"
           placeholderTextColor={colors.lightTransparent}
+          placeholder="Digite o seu e-mail"
           onChangeText={handleEmail}
         />
+
         <Label>Senha</Label>
         <TextInputLogin
           autoCompleteType="password"
           placeholder="Digite a sua senha"
-          secureTextEntry={true}
           placeholderTextColor={colors.lightTransparent}
+          secureTextEntry={true}
           onChangeText={handlePassword}
         />
-
         <Button
-          text="Entrar"
-          style={{ width: "96%" }}
-          disabled={login.email === "" || login.password === ""}
           handlePress={handleSubmit}
+          text={isLoading ? "Verificando..." : "Entrar"}
+          disabled={isLoading || login.email === "" || login.password === ""}
+          style={{ width: "96%" }}
         />
       </Content>
     </Container>

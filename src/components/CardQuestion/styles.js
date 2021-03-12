@@ -1,19 +1,21 @@
 import styled from "styled-components/native";
 import colors from "../../styles/colors";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { TextDefault } from "../../styles/stylesGlobal";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export const Container = styled.View`
   width: 96%;
   margin: 10px;
   min-height: 100px;
   padding: 10px;
+
   background-color: ${colors.darkGray};
   border-radius: 10px;
 `;
 
 export const CardHeader = styled.View`
   flex-direction: row;
+
   align-items: center;
 `;
 
@@ -38,6 +40,7 @@ export const TextDate = styled(TextDefault)`
 `;
 
 export const CardBody = styled.View`
+  flex-direction: column;
   margin-top: 15px;
 `;
 
@@ -49,27 +52,29 @@ export const TextTitle = styled(TextDefault)`
 
 export const TextDescription = styled(TextDefault)`
   padding: 8px;
+
   border-left-width: 2px;
   border-left-color: ${colors.primary};
 `;
 
 export const ImageQuestion = styled.Image`
-  background-color: ${colors.dark};
   margin-top: 15px;
   width: 100%;
   height: 300px;
+
+  background-color: ${colors.dark};
 `;
 
 export const CardFooter = styled.View`
-  flex-direction: column;
   margin-top: 15px;
+  flex-direction: column;
 `;
 
 export const ContainerInputAnswer = styled.View`
   flex-direction: row;
   align-items: center;
+
   margin-bottom: 4px;
-  position: relative;
 `;
 
 export const InputAnswer = styled.TextInput`
@@ -83,9 +88,7 @@ export const InputAnswer = styled.TextInput`
 `;
 
 export const SendIcon = styled(Icon)`
-  position: absolute;
-  color: ${colors.light};
-  right: 4px;
+  color: ${({ enabled }) => (enabled ? colors.light : colors.lightTransparent)};
   font-size: 25px;
 `;
 

@@ -1,24 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  CardBody,
-  CardFooter,
-  CardHeader,
   Container,
-  ContainerAnswer,
-  ContainerInputAnswer,
-  HeaderContent,
+  CardHeader,
   ImageProfile,
+  HeaderContent,
+  TextPoster,
+  TextDate,
+  CardBody,
+  TextTitle,
+  TextDescription,
   ImageQuestion,
+  CardFooter,
+  ContainerInputAnswer,
   InputAnswer,
   SendIcon,
-  TextDate,
-  TextDescription,
-  TextPoster,
-  TextTitle,
+  ContainerAnswer,
 } from "./styles";
 import fotoPerfil from "../../../assets/foto_perfil.png";
 import colors from "../../styles/colors";
-import { FlatList, Touchable, TouchableOpacity } from "react-native";
+import { Alert, FlatList, TouchableOpacity } from "react-native";
+import { api } from "../../services/api";
+import { getUser } from "../../services/security";
 
 function CardAnswer({ answer }) {
   return (
@@ -43,6 +45,44 @@ function CardAnswer({ answer }) {
 
 function CardQuestion({ question }) {
   const [showAnswers, setShowAnswers] = useState(false);
+
+  const [answers, setAnswers] = useState([]);
+
+  const [newAnswer, setNewAnswer] = useState("");
+
+  useEffect(() => {
+    setAnswers(question.Answers);
+  }, []);
+
+  const handleNewAnswer = async () => {
+    try {
+      const response = await api.post(`questions/${question.id}/answers`, {
+        description: newAnswer,
+      });
+
+      const aluno = await getUser();
+
+      const answerAdded = {
+        id: response.data.id,
+        description: newAnswer,
+        created_at: response.data.createdAt,
+        Student: {
+          id: aluno.studentId,
+          name: aluno.name,
+          image: aluno.image,
+        },
+      };
+
+      setAnswers([...answers, answerAdded]);
+
+      setNewAnswer("");
+    } catch (error) {
+      console.error(error);
+      if (error.response) {
+        Alert.alert("Ops", error.response.data.error);
+      }
+    }
+  };
 
   return (
     <Container>
@@ -72,24 +112,33 @@ function CardQuestion({ question }) {
       <CardFooter>
         <TouchableOpacity onPress={() => setShowAnswers(!showAnswers)}>
           <TextPoster>
-            {question.Answers.length === 0
+            {answers.length === 0
               ? "Seja o primeiro a responder"
-              : question.Answers.length + " respostas"}
+              : answers.length + " respostas"}
           </TextPoster>
         </TouchableOpacity>
-        {showAnswers && question.Answers.length > 0 && (
+        {showAnswers && answers.length > 0 && (
           <FlatList
-            data={question.Answers}
+            data={answers}
             keyExtractor={(answer) => String(answer.id)}
             renderItem={({ item: answer }) => <CardAnswer answer={answer} />}
           />
         )}
+
         <ContainerInputAnswer>
           <InputAnswer
             placeholder="Responda a essa pergunta"
             placeholderTextColor={colors.lightTransparent}
+            onChangeText={(value) => setNewAnswer(value)}
+            value={newAnswer}
           />
-          <SendIcon name="paper-plane" />
+          <TouchableOpacity
+            style={{ position: "absolute", right: 4 }}
+            onPress={handleNewAnswer}
+            disabled={!(newAnswer.length >= 10)}
+          >
+            <SendIcon name="paper-plane" enabled={newAnswer.length >= 10} />
+          </TouchableOpacity>
         </ContainerInputAnswer>
       </CardFooter>
     </Container>
